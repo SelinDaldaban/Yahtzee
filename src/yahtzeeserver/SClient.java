@@ -81,7 +81,7 @@ public class SClient {
                     //mesaj tipine göre işlemlere ayır
                     switch (received.type) {
                         case Name:
-                            TheClient.name = received.content.toString();
+                            TheClient.name = received.content1.toString();
                             System.out.println("Gelen client"+TheClient.name);
                             // isim verisini gönderdikten sonra eşleştirme işlemine başla
                             TheClient.pairThread.start();
@@ -92,7 +92,7 @@ public class SClient {
                             //gelen metni direkt rakibe gönder
                             Server.Send(TheClient.rival, received);
                             break;
-                        case Selected:
+                        case Secim:
                             //gelen seçim yapıldı mesajını rakibe gönder
                             Server.Send(TheClient.rival, received);
                             break;
@@ -160,11 +160,11 @@ public class SClient {
                         //her iki tarafada eşleşme mesajı gönder 
                         //oyunu başlat
                         Mesaj msg1 = new Mesaj(Mesaj.Message_Type.RivalConnected);
-                        msg1.content = TheClient.name;
+                        msg1.content1 = TheClient.name;
                         Server.Send(TheClient.rival, msg1);
 
                         Mesaj msg2 = new Mesaj(Mesaj.Message_Type.RivalConnected);
-                        msg2.content = TheClient.rival.name;
+                        msg2.content1 = TheClient.rival.name;
                         Server.Send(TheClient, msg2);
                     }
                     //lock mekanizmasını servest bırak
