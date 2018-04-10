@@ -18,7 +18,7 @@ import yahtzee.Yahtzee1;
 
 /**
  *
- * @author INSECT
+ * @author SELİN
  */
 // serverdan gelecek mesajları dinleyen thread
 class Listen extends Thread {
