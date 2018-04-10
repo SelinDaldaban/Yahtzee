@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import yahtzee.Mesaj;
 import yahtzee.Yahtzee1;
 
@@ -34,7 +35,7 @@ class Listen extends Thread {
                     case Name:
                         break;
                     case RivalConnected:
-                        String name = received.content.toString();
+                        String name = received.content1.toString();
                         Yahtzee1.ThisGame.oyuncu2.setText(name);
                     //  Yahtzee1.ThisGame.tmr_slider.start();
 
@@ -42,11 +43,51 @@ class Listen extends Thread {
                     case Disconnect:
                         break;
                     case Text:
-                        Yahtzee1.ThisGame.txt2.setText(received.content.toString());
+                        Yahtzee1.ThisGame.txt2.setText(received.content1.toString());
+                        
                         break;
 
-                    case Selected:
-                        Yahtzee1.ThisGame.RivalSelection = (int) received.content;
+                    case Secim:
+                        Yahtzee1.ThisGame.RivalSelection =  (String) received.content1;
+                        if ( Yahtzee1.ThisGame.RivalSelection.equals("threeof")) {
+                      Yahtzee1.ThisGame.jButton19.setText((String) received.content2);
+                        }
+                        if (Yahtzee1.ThisGame.RivalSelection.equals("fourof")) {
+                          Yahtzee1.ThisGame.jButton17.setText((String) received.content2);  
+                        }
+                        if (Yahtzee1.ThisGame.RivalSelection.equals("bir")) {
+                          Yahtzee1.ThisGame.jButton2.setText((String) received.content2);  
+                        }
+                        if (Yahtzee1.ThisGame.RivalSelection.equals("iki")) {
+                          Yahtzee1.ThisGame.jButton4.setText((String) received.content2);  
+                        }
+                         if (Yahtzee1.ThisGame.RivalSelection.equals("üc")) {
+                          Yahtzee1.ThisGame.jButton7.setText((String) received.content2);  
+                        }
+                         if (Yahtzee1.ThisGame.RivalSelection.equals("dört")) {
+                          Yahtzee1.ThisGame.jButton5.setText((String) received.content2);  
+                        }
+                         if (Yahtzee1.ThisGame.RivalSelection.equals("bes")) {
+                          Yahtzee1.ThisGame.jButton11.setText((String) received.content2);  
+                        }
+                         if (Yahtzee1.ThisGame.RivalSelection.equals("alti")) {
+                          Yahtzee1.ThisGame.jButton9.setText((String) received.content2);  
+                        }
+                         if (Yahtzee1.ThisGame.RivalSelection.equals("fullhouse")) {
+                          Yahtzee1.ThisGame.jButton23.setText((String) received.content2);  
+                        }
+                          if (Yahtzee1.ThisGame.RivalSelection.equals("smallst")) {
+                          Yahtzee1.ThisGame.jButton21.setText((String) received.content2);  
+                        }
+                           if (Yahtzee1.ThisGame.RivalSelection.equals("largest")) {
+                          Yahtzee1.ThisGame.jButton27.setText((String) received.content2);  
+                        }
+                           if (Yahtzee1.ThisGame.RivalSelection.equals("chance")) {
+                          Yahtzee1.ThisGame.jButton25.setText((String) received.content2);  
+                        }
+                            if (Yahtzee1.ThisGame.RivalSelection.equals("yahtzee")) {
+                          Yahtzee1.ThisGame.jButton3.setText((String) received.content2);  
+                        }
                         break;
                     case Bitis:
                         break;
@@ -95,7 +136,7 @@ public class Client {
             //ilk mesaj olarak isim gönderiyorum
             Mesaj msg = new Mesaj(Mesaj.Message_Type.Name);
                 System.out.println("Mesajın içeriği geldi " +Yahtzee1.ThisGame.oyuncu1.getText());
-            msg.content = Yahtzee1.ThisGame.oyuncu1.getText();
+            msg.content1 = Yahtzee1.ThisGame.oyuncu1.getText();
             Client.Send(msg);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
