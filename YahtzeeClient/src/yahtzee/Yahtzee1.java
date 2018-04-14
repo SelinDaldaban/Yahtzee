@@ -9,7 +9,10 @@ import client.Client;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -20,8 +23,8 @@ public class Yahtzee1 extends javax.swing.JFrame {
 
     public static Yahtzee1 ThisGame;
     public Thread tmr_slider;
-    public String RivalSelection;
-    public static String[] arr = {"1", "2", "3", "4", "5", "6"};
+    public String RivalSelection = "-1";
+    public static String[] arr = {"1", "2", "3", "4", "5", "6"}; //zarlara atılan değer
     ArrayList<JButton> butonlar = new ArrayList();
     int birler = 0;
     int ikiler = 0;
@@ -30,6 +33,18 @@ public class Yahtzee1 extends javax.swing.JFrame {
     int besler = 0;
     int altilar = 0;
     int sayac = 0;
+    boolean boolbir = false;
+    boolean booliki = false;
+    boolean booluc = false;
+    boolean booldort = false;
+    boolean boolbes = false;
+    boolean boolalti = false;
+    public String secim = "";
+    static int yhtz = 0;
+    int stoplam = 0;
+    int zarsayac = 0;
+    public int rakiptotalscore = 0;
+    public int totalscore = 0;
 
     /**
      * Creates new form Yahtzee1
@@ -43,6 +58,73 @@ public class Yahtzee1 extends javax.swing.JFrame {
         butonlar.add(zar3);
         butonlar.add(zar4);
         butonlar.add(zar5);
+        zar6.setVisible(false);
+        zar7.setVisible(false);
+        zar8.setVisible(false);
+        zar9.setVisible(false);
+        zar10.setVisible(false);
+        //    yahtzee.setText("0");
+    //sonuçları sürekli dinlemesi için thread
+        tmr_slider = new Thread(() -> {
+            //soket bağlıysa dönsün
+            while (Client.socket.isConnected()) {
+                try {
+                    //
+                    Thread.sleep(100);
+                    //eğer ikisinden biri -1 ise dönmeye devam etsin sonucu göstermesin
+                    totalscore();
+
+                } catch (InterruptedException ex) {
+
+                }
+            }
+        });
+        totalscore();
+    }
+
+    public void bastan() {  //oyun sırası geldiğinde üstteki zarlara yeni değer gelsin
+// alttaki zarlar listten çıksın ki onlarada değer atanmasın
+        for (int i = 0; i < butonlar.size(); i++) {
+            butonlar.get(i).setVisible(false);
+        }
+        butonlar.remove(zar10);
+        butonlar.remove(zar9);
+        butonlar.remove(zar8);
+        butonlar.remove(zar7);
+        butonlar.remove(zar6);
+        butonlar.add(zar1);
+        butonlar.add(zar2);
+        butonlar.add(zar3);
+        butonlar.add(zar4);
+        butonlar.add(zar5);
+        for (int i = 0; i < butonlar.size(); i++) {
+            butonlar.get(i).setVisible(true);
+        }
+        zarsayac = 0;
+    }
+
+    public void totalscore() { //tüm durumlar doluyken(seçilmişken) toplar ve sonucu gösterir:
+
+       this.setEnabled(true);
+        if (bir.isEnabled() == false && iki.isEnabled() == false && üc.isEnabled() == false
+                && dört.isEnabled() == false
+                && bes.isEnabled() == false && alti.isEnabled() == false
+                && threeof.isEnabled() == false
+                && fourof.isEnabled() == false && fullhouse.isEnabled() == false
+                && largest.isEnabled() == false
+                && chance.isEnabled() == false && yahtzee.isEnabled() == false) {
+            totalscore = Integer.valueOf(sum.getText()) + Integer.valueOf(bonus.getText())
+                    + Integer.valueOf(threeof.getText()) + Integer.valueOf(fourof.getText())
+                    + Integer.valueOf(fullhouse.getText()) + Integer.valueOf(smallst.getText())
+                    + Integer.valueOf(largest.getText()) + Integer.valueOf(chance.getText())
+                    + Integer.valueOf(yahtzee.getText());
+
+            Mesaj msg1 = new Mesaj(Mesaj.Message_Type.Bitis);
+            msg1.content1 = totalscore;
+            Client.Send(msg1);
+            jLabel11.setText(oyuncu1.getText()+" :"+String.valueOf(totalscore));
+           
+        }
 
     }
 
@@ -91,7 +173,11 @@ public class Yahtzee1 extends javax.swing.JFrame {
         fourof = new javax.swing.JButton();
         yahtzee = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         oyuncu1 = new javax.swing.JTextField();
@@ -107,14 +193,26 @@ public class Yahtzee1 extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txt1 = new javax.swing.JTextArea();
         jButton35 = new javax.swing.JButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        zar6 = new javax.swing.JButton();
+        zar7 = new javax.swing.JButton();
+        zar8 = new javax.swing.JButton();
+        zar9 = new javax.swing.JButton();
+        zar10 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(321, 272, -1, -1));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 385, -1, -1));
+        getContentPane().add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(433, 540, -1, -1));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/foto/Ekran Görüntüsü (52).png"))); // NOI18N
         jLabel1.setText("jLabel1");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 105, 470));
+        getContentPane().add(oyuncuİsim, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 0, 153, 20));
 
         jPanel1.setBackground(new java.awt.Color(0, 102, 0));
 
@@ -257,70 +355,78 @@ public class Yahtzee1 extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(yahtzee, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jButton25, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(fourof, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(threeof, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(bonus, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jButton23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(sum, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(üc, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(dört, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(bes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(alti, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(fullhouse, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(smallst, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(iki, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(bir, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(6, 6, 6)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jButton21, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(largest, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)
+                                .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(16, 16, 16))
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(chance, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(77, 77, 77))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(sum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(üc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(dört, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(bes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(alti, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(fullhouse, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(smallst, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(iki, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(bir, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(jButton21, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(bonus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(5, 5, 5)
-                                .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(largest, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(5, 5, 5)
-                                .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fourof, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(threeof, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addGap(16, 16, 16))
+                        .addContainerGap()
+                        .addComponent(chance, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(yahtzee, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -329,11 +435,11 @@ public class Yahtzee1 extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bir, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(iki, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -343,15 +449,15 @@ public class Yahtzee1 extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dört, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(3, 3, 3)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(bes, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(3, 3, 3)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(alti, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(3, 3, 3)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton15, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(sum, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -362,11 +468,11 @@ public class Yahtzee1 extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(threeof, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(fourof, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(3, 3, 3)
                         .addComponent(fullhouse, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -381,17 +487,33 @@ public class Yahtzee1 extends javax.swing.JFrame {
                     .addComponent(jButton27, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(largest, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(3, 3, 3)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(chance, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chance, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(yahtzee, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
-                    .addComponent(yahtzee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8)
+                .addGap(15, 15, 15))
         );
 
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 24, -1, 510));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 514, 375, 34));
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 51, 51));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 10, 180, 50));
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 51, 51));
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 14, 180, 50));
+
         jLabel4.setText("jLabel4");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 4, -1, -1));
 
         jPanel2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 5, true));
         jPanel2.setOpaque(false);
@@ -408,9 +530,38 @@ public class Yahtzee1 extends javax.swing.JFrame {
             }
         });
 
+        zar2.setBackground(new java.awt.Color(0, 204, 204));
+        zar2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar2ActionPerformed(evt);
+            }
+        });
+
+        zar3.setBackground(new java.awt.Color(204, 204, 255));
+        zar3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar3ActionPerformed(evt);
+            }
+        });
+
+        zar4.setBackground(new java.awt.Color(255, 204, 204));
+        zar4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar4ActionPerformed(evt);
+            }
+        });
+
+        zar1.setBackground(new java.awt.Color(255, 153, 51));
         zar1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 zar1ActionPerformed(evt);
+            }
+        });
+
+        zar5.setBackground(new java.awt.Color(51, 255, 204));
+        zar5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar5ActionPerformed(evt);
             }
         });
 
@@ -437,6 +588,45 @@ public class Yahtzee1 extends javax.swing.JFrame {
             }
         });
 
+        zar6.setBackground(new java.awt.Color(255, 153, 51));
+        zar6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar6ActionPerformed(evt);
+            }
+        });
+
+        zar7.setBackground(new java.awt.Color(0, 204, 204));
+        zar7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar7ActionPerformed(evt);
+            }
+        });
+
+        zar8.setBackground(new java.awt.Color(204, 204, 255));
+        zar8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar8ActionPerformed(evt);
+            }
+        });
+
+        zar9.setBackground(new java.awt.Color(255, 204, 204));
+        zar9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar9ActionPerformed(evt);
+            }
+        });
+
+        zar10.setBackground(new java.awt.Color(51, 255, 204));
+        zar10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                zar10ActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Adınız ->");
+
+        jLabel6.setText("<- Rakibiniz");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -444,135 +634,92 @@ public class Yahtzee1 extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(90, 90, 90)
+                        .addGap(35, 35, 35)
+                        .addComponent(jLabel5)
+                        .addGap(12, 12, 12)
                         .addComponent(oyuncu1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(oyuncu2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10)
+                        .addComponent(oyuncu2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(jLabel6))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addComponent(zar1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(zar2, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(zar3, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(zar4, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(zar5, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(121, 121, 121)
-                        .addComponent(ZarAt, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(zar1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addComponent(zar2, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(zar3, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(zar4, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(zar5, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37))
+                        .addComponent(ZarAt, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(zar6, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(zar7, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
+                                .addComponent(zar8, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
+                                .addComponent(zar9, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
+                                .addComponent(zar10, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jButton35)
-                .addGap(140, 140, 140))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 14, Short.MAX_VALUE))
+                .addGap(125, 125, 125))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(11, 11, 11)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(oyuncu1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(oyuncu2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(oyuncu2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(4, 4, 4)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))))
+                .addGap(11, 11, 11)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(zar1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(zar2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(zar3, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(zar4, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(zar5, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(6, 6, 6)
                 .addComponent(ZarAt, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(zar6, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(zar7, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(zar8, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(zar9, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(zar10, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(56, 56, 56)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jButton35, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
+                .addComponent(jButton35, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jToggleButton1.setText("jToggleButton1");
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 68, -1, 440));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/foto/Adsız.jpg"))); // NOI18N
         jLabel3.setText("jLabel3");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(400, 400, 400)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(392, 392, 392)
-                .addComponent(jLabel10))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(240, 240, 240)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(70, 70, 70)
-                .addComponent(oyuncuİsim, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(433, 433, 433)
-                .addComponent(jLabel17))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(490, 490, 490)
-                .addComponent(jToggleButton1))
-            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 830, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(321, 321, 321)
-                .addComponent(jLabel7))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(140, 140, 140)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(4, 4, 4)
-                .addComponent(jLabel4))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(94, 94, 94)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(385, 385, 385)
-                .addComponent(jLabel10))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(514, 514, 514)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(oyuncuİsim, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(540, 540, 540)
-                .addComponent(jLabel17))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addComponent(jToggleButton1))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(4, 4, 4)
-                .addComponent(jLabel3))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(272, 272, 272)
-                .addComponent(jLabel7))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 830, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -580,6 +727,24 @@ public class Yahtzee1 extends javax.swing.JFrame {
 
     private void ZarAtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ZarAtActionPerformed
         // TODO add your handling code here:
+      
+        butonlar.clear();
+        butonlar.add(zar1);
+        butonlar.add(zar2);
+        butonlar.add(zar3);
+        butonlar.add(zar4);
+        butonlar.add(zar5);
+        butonlar.add(zar6);
+        butonlar.add(zar7);
+        butonlar.add(zar8);
+        butonlar.add(zar9);
+        butonlar.add(zar10);
+        //Zar At a 3 kes bastıktan sonra kapanması için
+        zarsayac++;
+        if (zarsayac == 3 && ZarAt.isVisible()) {
+            ZarAt.setEnabled(false);
+        }
+
         birler = 0;
         ikiler = 0;
         üçler = 0;
@@ -587,6 +752,7 @@ public class Yahtzee1 extends javax.swing.JFrame {
         besler = 0;
         altilar = 0;
         sayac = 0;
+        //random olarak zarlara değer atama
         Random r = new Random();
 
         zar1.setText(arr[r.nextInt(arr.length)]);
@@ -594,125 +760,203 @@ public class Yahtzee1 extends javax.swing.JFrame {
         zar3.setText(arr[r.nextInt(arr.length)]);
         zar4.setText(arr[r.nextInt(arr.length)]);
         zar5.setText(arr[r.nextInt(arr.length)]);
-        for (int i = 0; i < butonlar.size(); i++) {
-            if (butonlar.get(i).getText().equals("1")) {
-                birler++;
 
+        //zarlardaki 1,2,3,4,5,6 nın adedini bulmak için:
+        for (int i = 0; i < butonlar.size(); i++) {
+
+            if (butonlar.get(i).getText().equals("1") && butonlar.get(i).isVisible()) {
+                birler++;
             }
-            if (butonlar.get(i).getText().equals("2")) {
+
+            if (butonlar.get(i).getText().equals("2") && butonlar.get(i).isVisible()) {
                 ikiler++;
             }
-            if (butonlar.get(i).getText().equals("3")) {
+            if (butonlar.get(i).getText().equals("3") && butonlar.get(i).isVisible()) {
                 üçler++;
             }
-            if (butonlar.get(i).getText().equals("4")) {
+            if (butonlar.get(i).getText().equals("4") && butonlar.get(i).isVisible()) {
                 dörtler++;
             }
-            if (butonlar.get(i).getText().equals("5")) {
+            if (butonlar.get(i).getText().equals("5") && butonlar.get(i).isVisible()) {
                 besler++;
             }
-            if (butonlar.get(i).getText().equals("6")) {
+            if (butonlar.get(i).getText().equals("6") && butonlar.get(i).isVisible()) {
                 altilar++;
             }
 
         }
-        bir.setText(String.valueOf(1 * birler));
-        iki.setText(String.valueOf(2 * ikiler));
-        üc.setText(String.valueOf(3 * üçler));
-        dört.setText(String.valueOf(4 * dörtler));
-        bes.setText(String.valueOf(5 * besler));
-        alti.setText(String.valueOf(6 * altilar));
-        //three of a kind
+//birler ikiler üçler dörtler besler ve altılara sonuc gösterilir
+        if (bir.isEnabled()) {
+            bir.setText(String.valueOf(1 * birler));
+        }
+
+        if (iki.isEnabled()) {
+            iki.setText(String.valueOf(2 * ikiler));
+        }
+
+        if (üc.isEnabled()) {
+            üc.setText(String.valueOf(3 * üçler));
+        }
+
+        if (dört.isEnabled()) {
+            dört.setText(String.valueOf(4 * dörtler));
+        }
+        if (bes.isEnabled()) {
+            bes.setText(String.valueOf(5 * besler));
+        }
+        if (alti.isEnabled()) {
+            alti.setText(String.valueOf(6 * altilar));
+        }
+
+        //THREE OF A KIND için kodlar:
         int sayi = 0;
-        threeof.setText("0");
-        if (birler >= 3) {
-            sayi = birler * 1;
-            sayi += (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
-            threeof.setText(String.valueOf(sayi));
-        } else if (ikiler >= 3) {
-            sayi = ikiler * 2;
-            sayi += (birler * 1) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
-            threeof.setText(String.valueOf(sayi));
-        } else if (üçler >= 3) {
-             sayi = üçler*3;
-            sayi += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (besler * 5) + (altilar * 6);
-            threeof.setText(String.valueOf(sayi));
-        } else if (dörtler >= 3) {
-             sayi = dörtler*4;
-            sayi += (birler * 1) + (ikiler * 2) + (üçler*3) + (besler * 5) + (altilar * 6);
-            threeof.setText(String.valueOf(sayi));
-        } else if (besler >= 3) {
-             sayi = besler*5;
-            sayi += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (üçler*3) + (altilar * 6);
-            threeof.setText(String.valueOf(sayi));
-        } else if (altilar >= 3) {
-            sayi = altilar * 6;
-            sayi += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (üçler*3) + (besler*5);
-            threeof.setText(String.valueOf(sayi));
+
+        if (threeof.isEnabled()) {
+           threeof.setText("0");
+            if (birler >= 3) {
+                sayi = birler * 1;
+                sayi += (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+
+                threeof.setText(String.valueOf(sayi));
+            } else if (ikiler >= 3) {
+                sayi = ikiler * 2;
+                sayi += (birler * 1) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+                threeof.setText(String.valueOf(sayi));
+            } else if (üçler >= 3) {
+                sayi = üçler * 3;
+                sayi += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+                threeof.setText(String.valueOf(sayi));
+            } else if (dörtler >= 3) {
+                sayi = dörtler * 4;
+                sayi += (birler * 1) + (ikiler * 2) + (üçler * 3) + (besler * 5) + (altilar * 6);
+                threeof.setText(String.valueOf(sayi));
+            } else if (besler >= 3) {
+                sayi = besler * 5;
+                sayi += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (üçler * 3) + (altilar * 6);
+                threeof.setText(String.valueOf(sayi));
+            } else if (altilar >= 3) {
+                sayi = altilar * 6;
+                sayi += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (üçler * 3) + (besler * 5);
+                threeof.setText(String.valueOf(sayi));
+            }
         }
-        //four of a kind
-        fourof.setText("0");
+        //four of a kind için kodlar:
+
         int sayi1 = 0;
-        if (birler >= 4) {
-            sayi1 = birler * 1;
-            sayi1 += (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
-            fourof.setText(String.valueOf(sayi1));
-        } else if (ikiler >= 4) {
-            sayi1=ikiler * 2;
-             sayi1 += (birler * 1) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
-            fourof.setText(String.valueOf(sayi1));
-        } else if (üçler >= 4) {
-              sayi1=üçler * 3;
-             sayi1 += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (besler * 5) + (altilar * 6);
-            fourof.setText(String.valueOf(üçler * 3));
-        } else if (dörtler >= 4) {
-             sayi1=dörtler * 4;
-             sayi1 += (birler * 1) + (ikiler * 2) + (üçler * 3) + (besler * 5) + (altilar * 6);
-            fourof.setText(String.valueOf(sayi1));
-        } else if (besler >= 4) {
-             sayi1=besler * 5;
-             sayi1 += (birler * 1) + (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (altilar * 6);
-            fourof.setText(String.valueOf(sayi1));
-        } else if (altilar >= 4) {
-             sayi1=altilar * 6;
-             sayi1 += (birler * 1) + (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5);
-            fourof.setText(String.valueOf(sayi1));
+        if (fourof.isEnabled()) {
+            fourof.setText("0");
+            if (birler >= 4) {
+                sayi1 = birler * 1;
+                sayi1 += (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+                fourof.setText(String.valueOf(sayi1));
+            } else if (ikiler >= 4) {
+                sayi1 = ikiler * 2;
+                sayi1 += (birler * 1) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+                fourof.setText(String.valueOf(sayi1));
+            } else if (üçler >= 4) {
+                sayi1 = üçler * 3;
+                sayi1 += (birler * 1) + (ikiler * 2) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+                fourof.setText(String.valueOf(sayi1));
+            } else if (dörtler >= 4) {
+                sayi1 = dörtler * 4;
+                sayi1 += (birler * 1) + (ikiler * 2) + (üçler * 3) + (besler * 5) + (altilar * 6);
+                fourof.setText(String.valueOf(sayi1));
+            } else if (besler >= 4) {
+                sayi1 = besler * 5;
+                sayi1 += (birler * 1) + (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (altilar * 6);
+                fourof.setText(String.valueOf(sayi1));
+            } else if (altilar >= 4) {
+                sayi1 = altilar * 6;
+                sayi1 += (birler * 1) + (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5);
+                fourof.setText(String.valueOf(sayi1));
+            }
         }
-         //full house
-         fullhouse.setText(String.valueOf("0"));
-        if ((birler>=3||ikiler>=3||üçler>=3||dörtler>=3||besler>=3||altilar>=3)
-                &&(birler>=2||ikiler>=2||üçler>=2||dörtler>=2||besler>=2||altilar>=2)) {
-            fullhouse.setText(String.valueOf("25"));
+        //full house için kodlar:
+
+        if (fullhouse.isEnabled()) {
+            fullhouse.setText(("0"));
+            if ((birler == 3 || ikiler == 3 || üçler == 3 || dörtler == 3 || besler == 3 || altilar == 3)
+                    && (birler == 2 || ikiler == 2 || üçler == 2 || dörtler == 2 || besler == 2 || altilar == 2)) {
+                fullhouse.setText(String.valueOf("25"));
+            }
         }
-        // small straight
-        smallst.setText(String.valueOf("0"));
-        if ((birler==1 &&ikiler==1 &&üçler==1 &&dörtler==1) ||
-              ( birler==1 &&ikiler==1 &&üçler==1 &&dörtler==1 &&besler==1)||
-                (ikiler==1 &&üçler==1 &&dörtler==1 &&besler==1 &&altilar==1)) {
-              smallst.setText(String.valueOf("30"));
-            
+        // small straight için kodlar:
+
+        if (smallst.isEnabled()) {
+            smallst.setText(("0"));
+            if ((birler >= 1 && ikiler >= 1 && üçler >= 1 && dörtler >= 1)
+            || ( ikiler>= 1 && üçler >= 1 && dörtler >= 1 && besler >= 1)
+            || ( üçler >= 1 && dörtler >= 1 && besler>= 1 && altilar >= 1)) {
+                smallst.setText(("30"));
+
+            }
         }
-       
-        //big straight 
-         largest.setText(String.valueOf("0"));
-        if ((birler ==1 && ikiler ==1 && üçler ==1 && dörtler==1 && besler==1)
-                || (ikiler ==1 && üçler ==1 && dörtler==1 && besler==1 && altilar ==1)) {
-         largest.setText(String.valueOf("40"));
+
+        //big straight için kodlar:
+         
+        if (largest.isEnabled()) {
+           largest.setText(("0"));
+            if ((birler == 1 && ikiler == 1 && üçler == 1 && dörtler == 1 && besler == 1)
+                    || (ikiler == 1 && üçler == 1 && dörtler == 1 && besler == 1 && altilar == 1)) {
+                largest.setText(String.valueOf("40"));
+            }
         }
-        //change
-        int chng=0;
-        chng += (birler * 1) + (ikiler * 2) + (üçler * 3) + (dörtler * 4) +(besler * 5)+ (altilar * 6);
-        chance.setText(String.valueOf(chng));
-        //yahtzee
-        int yhtz=50;
-          yahtzee.setText(String.valueOf("0"));
-        if (birler==6 || ikiler==6 || üçler==6 || dörtler==6||
-                besler==6||altilar==6) {
-            yhtz+=50;
-            yahtzee.setText(String.valueOf(yhtz));
+
+        //change için kodlar:
+               
+        if (chance.isEnabled()) {
+     chance.setText(("0"));
+            int chng = 0;
+            chng += (birler * 1) + (ikiler * 2) + (üçler * 3) + (dörtler * 4) + (besler * 5) + (altilar * 6);
+            chance.setText(String.valueOf(chng));
+
         }
-        //sum
-        //bonus
+        //yahtzee için kodlar:
+        
+        if (yahtzee.isEnabled()) {
+            yahtzee.setText("0");
+            if (birler == 5 || ikiler == 5 || üçler == 5 || dörtler == 5
+                    || besler == 5 || altilar == 5 && yahtzee.isEnabled() == true) {
+
+                yhtz = 50;
+                yahtzee.setText(String.valueOf(yhtz));
+            }
+        } else if (yahtzee.isEnabled() == false) {
+
+            if (birler == 5 || ikiler == 5 || üçler == 5 || dörtler == 5
+                    || besler == 5 || altilar == 5) {
+                yhtz += 50;
+                yahtzee.setText(String.valueOf(yhtz));
+
+                Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+                m.content1 = "yahtzee";
+                m.content2 = yahtzee.getText();
+                Client.Send(m);
+
+                secim = "1";
+
+                RivalSelection = "-1";
+            }
+        }
+        //SUM  için kodlar: 1,2,3,4,5,6 nın hepsi dolduysa toplamı bul
+        if (boolbir == true && booliki == true && booluc == true && booldort == true
+                && boolbes == true && boolalti == true) {
+            sum.setText("0");
+            stoplam = (Integer.valueOf(bir.getText()) + Integer.valueOf(iki.getText())
+                    + Integer.valueOf(üc.getText()) + Integer.valueOf(dört.getText())
+                    + Integer.valueOf(bes.getText()) + Integer.valueOf(alti.getText()));
+            sum.setText(String.valueOf(stoplam));
+
+        }
+
+        //bonus için kodlar:
+        //  bonus.setText("0");
+        if (stoplam >= 65) {
+            bonus.setText("35");
+        } else {
+            bonus.setText("0");
+        }
+        totalscore();
     }//GEN-LAST:event_ZarAtActionPerformed
 
     private void oyuncu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oyuncu1ActionPerformed
@@ -734,29 +978,197 @@ public class Yahtzee1 extends javax.swing.JFrame {
 
     private void zar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar1ActionPerformed
         // TODO add your handling code here:
+        zar6.setVisible(true);
+        zar1.setVisible(false);
+        zar6.setText(zar1.getText());
+        butonlar.remove(zar1);
+        butonlar.add(zar6);
+
     }//GEN-LAST:event_zar1ActionPerformed
+
+    private void zar6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar6ActionPerformed
+        // TODO add your handling code here:
+        zar1.setVisible(true);
+        zar6.setVisible(false);
+        zar1.setText(zar6.getText());
+        butonlar.remove(zar6);
+        butonlar.add(zar1);//bunu nye yapıyorsun ki zar1den 6 ya alcak 1 e tekarar random atamasın dıye
+
+    }//GEN-LAST:event_zar6ActionPerformed
+
+    private void zar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar2ActionPerformed
+        // TODO add your handling code here:
+        zar7.setVisible(true);
+        zar2.setVisible(false);
+        zar7.setText(zar2.getText());
+        butonlar.remove(zar2);
+        butonlar.add(zar7);
+    }//GEN-LAST:event_zar2ActionPerformed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {
+        // TODO add your handling code here:
+        //form kapanırken clienti durdur
+        Client.Stop();
+    }
+    private void zar3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar3ActionPerformed
+        // TODO add your handling code here:
+        zar8.setVisible(true);
+        zar3.setVisible(false);
+        zar8.setText(zar3.getText());
+        butonlar.remove(zar3);
+        butonlar.add(zar8);
+    }//GEN-LAST:event_zar3ActionPerformed
+
+    private void zar4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar4ActionPerformed
+        // TODO add your handling code here:
+        zar9.setVisible(true);
+        zar4.setVisible(false);
+        zar9.setText(zar4.getText());
+        butonlar.remove(zar4);
+        butonlar.add(zar9);
+    }//GEN-LAST:event_zar4ActionPerformed
+
+    private void zar5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar5ActionPerformed
+        // TODO add your handling code here:
+        zar10.setVisible(true);
+        zar5.setVisible(false);
+        zar10.setText(zar5.getText());
+        butonlar.remove(zar5);
+        butonlar.add(zar10);
+    }//GEN-LAST:event_zar5ActionPerformed
+
+    private void zar7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar7ActionPerformed
+        // TODO add your handling code here:
+        zar2.setVisible(true);
+        zar7.setVisible(false);
+        zar7.setText(zar2.getText());
+        butonlar.remove(zar7);
+        butonlar.add(zar2);
+
+    }//GEN-LAST:event_zar7ActionPerformed
+
+    private void zar8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar8ActionPerformed
+        // TODO add your handling code here:
+        zar3.setVisible(true);
+        zar8.setVisible(false);
+        zar8.setText(zar3.getText());
+        butonlar.remove(zar8);
+        butonlar.add(zar3);
+    }//GEN-LAST:event_zar8ActionPerformed
+
+    private void zar9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar9ActionPerformed
+        // TODO add your handling code here:
+        zar4.setVisible(true);
+        zar9.setVisible(false);
+        zar9.setText(zar4.getText());
+        butonlar.remove(zar9);
+        butonlar.add(zar4);
+    }//GEN-LAST:event_zar9ActionPerformed
+
+    private void zar10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zar10ActionPerformed
+        // TODO add your handling code here:
+        zar5.setVisible(true);
+        zar10.setVisible(false);
+        zar10.setText(zar5.getText());
+        butonlar.remove(zar10);
+        butonlar.add(zar5);
+    }//GEN-LAST:event_zar10ActionPerformed
+
+    private void yahtzeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yahtzeeActionPerformed
+        // TODO add your handling code here:
+
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "yahtzee";
+        m.content2 = yahtzee.getText();
+        Client.Send(m);
+
+        yahtzee.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
+
+
+    }//GEN-LAST:event_yahtzeeActionPerformed
+
+    private void fourofActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fourofActionPerformed
+        // TODO add your handling code here:
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "fourof";
+        m.content2 = fourof.getText();
+        Client.Send(m);
+        fourof.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
+    }//GEN-LAST:event_fourofActionPerformed
+
+    private void dörtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dörtActionPerformed
+        // TODO add your handling code here:
+        booldort = true;
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "dört";
+        m.content2 = dört.getText();
+        Client.Send(m);
+        dört.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        this.setEnabled(false);
+        bastan();
+        RivalSelection = "-1";
+    }//GEN-LAST:event_dörtActionPerformed
+
+    private void ücActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ücActionPerformed
+        // TODO add your handling code here:
+        booluc = true;
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "üc";
+        m.content2 = üc.getText();
+        Client.Send(m);
+        üc.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        this.setEnabled(false);
+        bastan();
+        RivalSelection = "-1";
+    }//GEN-LAST:event_ücActionPerformed
 
     private void ikiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ikiActionPerformed
         // TODO add your handling code here:
+
+        this.setEnabled(false);
+        booliki = true;
         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
         m.content1 = "iki";
         m.content2 = iki.getText();
         Client.Send(m);
-         iki.setVisible(false);
+        iki.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        RivalSelection = "-1";
     }//GEN-LAST:event_ikiActionPerformed
 
-    private void bonusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bonusActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bonusActionPerformed
+    private void birActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_birActionPerformed
 
-    private void chanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chanceActionPerformed
         // TODO add your handling code here:
-         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "chance";
-        m.content2 = chance.getText();
+        boolbir = true;
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "bir";
+        m.content2 = bir.getText();
         Client.Send(m);
-        chance.setVisible(false);
-    }//GEN-LAST:event_chanceActionPerformed
+        // bir.setVisible(false);
+        bir.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        // biradetsec();
+        this.setEnabled(false);
+        bastan();
+        RivalSelection = "-1";
+
+    }//GEN-LAST:event_birActionPerformed
 
     private void threeofActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_threeofActionPerformed
         // TODO add your handling code here:
@@ -764,104 +1176,108 @@ public class Yahtzee1 extends javax.swing.JFrame {
         m.content1 = "threeof";
         m.content2 = threeof.getText();
         Client.Send(m);
-         threeof.setVisible(false);
+        threeof.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
     }//GEN-LAST:event_threeofActionPerformed
 
-    private void fullhouseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullhouseActionPerformed
+    private void bonusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bonusActionPerformed
         // TODO add your handling code here:
-          Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "fullhouse";
-        m.content2 = fullhouse.getText();
-        Client.Send(m);
-        fullhouse.setVisible(false);
+    }//GEN-LAST:event_bonusActionPerformed
 
-    }//GEN-LAST:event_fullhouseActionPerformed
-
-    private void fourofActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fourofActionPerformed
+    private void sumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sumActionPerformed
         // TODO add your handling code here:
-         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "fourof";
-        m.content2 = fourof.getText();
-        Client.Send(m);
-         fourof.setVisible(false);
-    }//GEN-LAST:event_fourofActionPerformed
-
-    private void birActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_birActionPerformed
-        // TODO add your handling code here:
-         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "bir";
-        m.content2 = bir.getText();
-        Client.Send(m);
-        bir.setVisible(false);
-    }//GEN-LAST:event_birActionPerformed
-
-    private void ücActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ücActionPerformed
-        // TODO add your handling code here:
-       Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "üc";
-        m.content2 = üc.getText();
-        Client.Send(m); 
-         üc.setVisible(false);
-    }//GEN-LAST:event_ücActionPerformed
-
-    private void dörtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dörtActionPerformed
-        // TODO add your handling code here:
-        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "dört";
-        m.content2 = dört.getText();
-        Client.Send(m); 
-         dört.setVisible(false);
-    }//GEN-LAST:event_dörtActionPerformed
-
-    private void besActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_besActionPerformed
-        // TODO add your handling code here:
-          Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "bes";
-        m.content2 = bes.getText();
-        Client.Send(m); 
-         bes.setVisible(false);
-    }//GEN-LAST:event_besActionPerformed
+    }//GEN-LAST:event_sumActionPerformed
 
     private void altiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altiActionPerformed
         // TODO add your handling code here:
+        boolalti = true;
         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
         m.content1 = "alti";
         m.content2 = alti.getText();
         Client.Send(m);
-         alti.setVisible(false);
+        alti.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
     }//GEN-LAST:event_altiActionPerformed
 
-    private void smallstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smallstActionPerformed
+    private void besActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_besActionPerformed
+        // TODO add your handling code here:
+        boolbes = true;
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "bes";
+        m.content2 = bes.getText();
+        Client.Send(m);
+        bes.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
+    }//GEN-LAST:event_besActionPerformed
+
+    private void chanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chanceActionPerformed
         // TODO add your handling code here:
         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "smallst";
-        m.content2 = smallst.getText();
-        Client.Send(m); 
-        smallst.setVisible(false);
-    }//GEN-LAST:event_smallstActionPerformed
+        m.content1 = "chance";
+        m.content2 = chance.getText();
+        Client.Send(m);
+        chance.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
+    }//GEN-LAST:event_chanceActionPerformed
 
     private void largestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_largestActionPerformed
         // TODO add your handling code here:
         Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
         m.content1 = "largest";
         m.content2 = largest.getText();
-        Client.Send(m); 
-        largest.setVisible(false);
+        Client.Send(m);
+        largest.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
     }//GEN-LAST:event_largestActionPerformed
 
-    private void yahtzeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yahtzeeActionPerformed
+    private void smallstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smallstActionPerformed
         // TODO add your handling code here:
-       Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
-        m.content1 = "yahtzee";
-        m.content2 = yahtzee.getText();
-        Client.Send(m); 
-        yahtzee.setVisible(false);
-    }//GEN-LAST:event_yahtzeeActionPerformed
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "smallst";
+        m.content2 = smallst.getText();
+        Client.Send(m);
+        smallst.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
+    }//GEN-LAST:event_smallstActionPerformed
 
-    private void sumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sumActionPerformed
+    private void fullhouseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullhouseActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_sumActionPerformed
-
+        Mesaj m = new Mesaj(Mesaj.Message_Type.Secim);
+        m.content1 = "fullhouse";
+        m.content2 = fullhouse.getText();
+        Client.Send(m);
+        fullhouse.setEnabled(false);
+        ZarAt.setEnabled(false);
+        secim = "1";
+        bastan();
+        this.setEnabled(false);
+        RivalSelection = "-1";
+    }//GEN-LAST:event_fullhouseActionPerformed
+ 
     /**
      * @param args the command line arguments
      */
@@ -898,7 +1314,7 @@ public class Yahtzee1 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton ZarAt;
+    public javax.swing.JButton ZarAt;
     public javax.swing.JButton alti;
     public javax.swing.JButton bes;
     public javax.swing.JButton bir;
@@ -926,16 +1342,21 @@ public class Yahtzee1 extends javax.swing.JFrame {
     public javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    public javax.swing.JLabel jLabel11;
+    public javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JToggleButton jToggleButton1;
     public javax.swing.JButton largest;
     public javax.swing.JTextField oyuncu1;
     public javax.swing.JTextField oyuncu2;
@@ -947,10 +1368,15 @@ public class Yahtzee1 extends javax.swing.JFrame {
     public javax.swing.JTextArea txt2;
     public javax.swing.JButton yahtzee;
     private javax.swing.JButton zar1;
+    private javax.swing.JButton zar10;
     private javax.swing.JButton zar2;
     private javax.swing.JButton zar3;
     private javax.swing.JButton zar4;
     private javax.swing.JButton zar5;
+    private javax.swing.JButton zar6;
+    private javax.swing.JButton zar7;
+    private javax.swing.JButton zar8;
+    private javax.swing.JButton zar9;
     public javax.swing.JButton üc;
     // End of variables declaration//GEN-END:variables
 }

@@ -18,7 +18,7 @@ import yahtzee.Mesaj;
 
 /**
  *
- * @author INSECT
+ * @author SELİN
  */
 //client gelişini dinleme threadi
 class ServerThread extends Thread {

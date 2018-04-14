@@ -17,7 +17,7 @@ import yahtzeeserver.Server;
 
 /**
  *
- * @author INSECT
+ * @author SELİN
  */
 public class SClient {
 
@@ -97,6 +97,9 @@ public class SClient {
                             Server.Send(TheClient.rival, received);
                             break;
                         case Bitis:
+                            
+                              Server.Send(TheClient.rival, received);
+                             // Server.Send(TheClient, received); 
                             break;
 
                     }
